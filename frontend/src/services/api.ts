@@ -1,5 +1,6 @@
 // frontend/src/services/api.ts
-const BASE_URL = "http://127.0.0.1:8000";
+
+const BASE_URL = "https://clinicalnlp-backend.onrender.com";
 
 type ApiResult = {
   ok: boolean;
@@ -24,7 +25,9 @@ async function _safeJson(resp: Response) {
 
 function _normalize(json: any): Partial<ApiResult> {
   if (!json) return {};
+
   const revisedNotesObj = json?.revisedNotes ?? {};
+
   const revisedNoteText =
     json?.revisedNoteText ??
     (revisedNotesObj && typeof revisedNotesObj === "object"
@@ -38,7 +41,9 @@ function _normalize(json: any): Partial<ApiResult> {
           .join("\n\n")
       : "");
 
-  const overallScore = Number(json?.overallScore ?? json?.percentage ?? 0) || 0;
+  const overallScore =
+    Number(json?.overallScore ?? json?.percentage ?? 0) || 0;
+
   const admissionRecommended = Boolean(json?.admissionRecommended);
 
   return {
@@ -48,11 +53,14 @@ function _normalize(json: any): Partial<ApiResult> {
     missingCriteria: json?.missingCriteria ?? [],
     overallScore,
     admissionRecommended,
-    rawPdfPreview: json?.rawPdfSectionsPreview ?? json?.rawPdfPreview ?? "",
+    rawPdfPreview:
+      json?.rawPdfSectionsPreview ?? json?.rawPdfPreview ?? "",
   };
 }
 
-export async function analyzeNote(note: string): Promise<ApiResult> {
+export async function analyzeNote(
+  note: string
+): Promise<ApiResult> {
   try {
     const res = await fetch(`${BASE_URL}/analyze`, {
       method: "POST",
@@ -61,37 +69,69 @@ export async function analyzeNote(note: string): Promise<ApiResult> {
     });
 
     const json = await _safeJson(res);
+
     if (!res.ok) {
-      return { ok: false, status: res.status, error: json?.message ?? res.statusText };
+      return {
+        ok: false,
+        status: res.status,
+        error: json?.message ?? res.statusText,
+      };
     }
 
-    return { ok: true, status: res.status, ...(_normalize(json) as any) };
+    return {
+      ok: true,
+      status: res.status,
+      ...(_normalize(json) as any),
+    };
   } catch (err: any) {
     console.error("analyzeNote error", err);
-    return { ok: false, status: 0, error: String(err) };
+    return {
+      ok: false,
+      status: 0,
+      error: String(err),
+    };
   }
 }
 
-export async function uploadAndAnalyze(doctorNote: string, guidelineFile: File): Promise<ApiResult> {
+export async function uploadAndAnalyze(
+  doctorNote: string,
+  guidelineFile: File
+): Promise<ApiResult> {
   try {
     const form = new FormData();
     form.append("doctor_note", doctorNote);
     form.append("guideline", guidelineFile);
 
-    const res = await fetch(`${BASE_URL}/analyze-with-guideline`, {
-      method: "POST",
-      body: form,
-    });
+    const res = await fetch(
+      `${BASE_URL}/analyze-with-guideline`,
+      {
+        method: "POST",
+        body: form,
+      }
+    );
 
     const json = await _safeJson(res);
+
     if (!res.ok) {
-      return { ok: false, status: res.status, error: json?.message ?? res.statusText };
+      return {
+        ok: false,
+        status: res.status,
+        error: json?.message ?? res.statusText,
+      };
     }
 
-    return { ok: true, status: res.status, ...(_normalize(json) as any) };
+    return {
+      ok: true,
+      status: res.status,
+      ...(_normalize(json) as any),
+    };
   } catch (err: any) {
     console.error("uploadAndAnalyze error", err);
-    return { ok: false, status: 0, error: String(err) };
+    return {
+      ok: false,
+      status: 0,
+      error: String(err),
+    };
   }
 }
 

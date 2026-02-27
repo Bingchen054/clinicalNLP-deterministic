@@ -4,7 +4,8 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "/clinicalNLP-deterministic/",   // 👈 必须加这行
+  // ✅ GitHub Pages 必须配置
+  base: "/clinicalNLP-deterministic/",
 
   server: {
     host: "::",
@@ -21,7 +22,7 @@ export default defineConfig(({ mode }) => ({
 
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(process.cwd(), "src"),
     },
   },
 }));
