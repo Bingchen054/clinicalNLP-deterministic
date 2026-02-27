@@ -1,6 +1,6 @@
 // frontend/src/services/api.ts
 
-const BASE_URL = "https://clinicalnlp-backend.onrender.com";
+const BASE_URL = "https://clinicalnlp-deterministic-backend.onrender.com";
 
 type ApiResult = {
   ok: boolean;
